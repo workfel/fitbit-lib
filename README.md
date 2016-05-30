@@ -103,3 +103,8 @@ app.get('/activity/steps', function (req, res) {
 ## Client API
 
 TODO
+
+
+
+[npm-image]: https://nodei.co/npm/fitbit-lib.png
+[npm-url]: https://nodei.co/npm/fitbit-lib
