@@ -1,3 +1,4 @@
+import {emptyCompilationResult} from "gulp-typescript/release/reporter";
 var request = require('request');
 var moment = require('moment');
 var async = require('async');
@@ -27,7 +28,7 @@ export class Fitbit implements IFitbit {
     private token:any;
 
     constructor(private config:FitbitOptionModel) {
-
+        this.config = config;
     }
 
     setToken(token:string):void {
@@ -94,6 +95,116 @@ export class Fitbit implements IFitbit {
                 this.token = token;
             } catch (err) {
                 cb(err);
+            }
+        });
+    }
+
+    getTimeSeriesStepsActivity(startDate:string, endDate:string, cb:any) {
+        this.getTimeSeriesActivity(startDate, endDate, "steps", (err:any, result:any)=> {
+            if (err) {
+                cb(err)
+            } else {
+                cb(null, result["activities-steps"]);
+            }
+        });
+    }
+
+    private getTimeSeriesActivity(startDate:string, endDate:string, ressourcesPath:string, cb:any) {
+
+        if (!this.token)
+            return cb(new Error('must setToken() or getToken() before calling request()'));
+
+
+        let url:string = "https://api.fitbit.com/1/user/"
+            .concat(this.token.user_id)
+            .concat("/activities/")
+            .concat(ressourcesPath)
+            .concat("/date/")
+            .concat(moment(startDate).format('YYYY-MM-DD'))
+            .concat("/")
+            .concat(moment(endDate).format('YYYY-MM-DD'))
+            .concat(".json");
+
+        try {
+            this.request({
+                uri: url
+            }, (err:any, response) => {
+                if (err) {
+                    cb(err);
+                } else {
+                    cb(null, JSON.parse(response));
+                }
+            });
+        } catch (e) {
+            cb(e);
+        }
+    }
+
+    getDailyActivity(date:string, cb:any):void {
+        let activityDate:string = moment(date).format('YYYY-MM-DD');
+
+        if (!this.token)
+            return cb(new Error('must setToken() or getToken() before calling request()'));
+
+
+        let url:string = "https://api.fitbit.com/1/user/"
+            .concat(this.token.user_id)
+            .concat("/activities/date/")
+            .concat(activityDate)
+            .concat(".json");
+
+        try {
+            this.request({
+                uri: url
+            }, (err:any, response) => {
+                if (err) {
+                    cb(err);
+                } else {
+                    cb(null, JSON.parse(response));
+                }
+            });
+        } catch (e) {
+            cb(e);
+        }
+    }
+
+
+    getDailySteps(date:string, cb:any):void {
+        this.getDailyActivity(date, (err:any, result:any) => {
+            if (err) {
+                return cb(err);
+            } else {
+                return cb(null, result.summary.steps);
+            }
+        });
+    }
+
+    getDailyCalories(date:string, cb:any):void {
+        this.getDailyActivity(date, (err:any, result:any) => {
+            if (err) {
+                return cb(err);
+            } else {
+                return cb(null, result.summary.activityCalories);
+            }
+        });
+    }
+
+    getDailyFloors(date:string, cb:any):void {
+        this.getDailyActivity(date, (err:any, result:any) => {
+            if (err) {
+                return cb(err);
+            } else {
+                return cb(null, result.summary.floors);
+            }
+        });
+    }
+
+    getDailyElevation(date:string, cb:any):void {
+        this.getDailyActivity(date, (err:any, result:any) => {
+            if (err) {
+                return cb(err);
+            } else {
+                return cb(null, result.summary.elevation);
             }
         });
     }

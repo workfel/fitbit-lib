@@ -5,6 +5,7 @@ var async = require('async');
 var Fitbit = (function () {
     function Fitbit(config) {
         this.config = config;
+        this.config = config;
     }
     Fitbit.prototype.setToken = function (token) {
         this.token = token;
@@ -71,6 +72,109 @@ var Fitbit = (function () {
             }
             catch (err) {
                 cb(err);
+            }
+        });
+    };
+    Fitbit.prototype.getTimeSeriesStepsActivity = function (startDate, endDate, cb) {
+        this.getTimeSeriesActivity(startDate, endDate, "steps", function (err, result) {
+            if (err) {
+                cb(err);
+            }
+            else {
+                cb(null, result["activities-steps"]);
+            }
+        });
+    };
+    Fitbit.prototype.getTimeSeriesActivity = function (startDate, endDate, ressourcesPath, cb) {
+        if (!this.token)
+            return cb(new Error('must setToken() or getToken() before calling request()'));
+        var url = "https://api.fitbit.com/1/user/"
+            .concat(this.token.user_id)
+            .concat("/activities/")
+            .concat(ressourcesPath)
+            .concat("/date/")
+            .concat(moment(startDate).format('YYYY-MM-DD'))
+            .concat("/")
+            .concat(moment(endDate).format('YYYY-MM-DD'))
+            .concat(".json");
+        try {
+            this.request({
+                uri: url
+            }, function (err, response) {
+                if (err) {
+                    cb(err);
+                }
+                else {
+                    cb(null, JSON.parse(response));
+                }
+            });
+        }
+        catch (e) {
+            cb(e);
+        }
+    };
+    Fitbit.prototype.getDailyActivity = function (date, cb) {
+        var activityDate = moment(date).format('YYYY-MM-DD');
+        if (!this.token)
+            return cb(new Error('must setToken() or getToken() before calling request()'));
+        var url = "https://api.fitbit.com/1/user/"
+            .concat(this.token.user_id)
+            .concat("/activities/date/")
+            .concat(activityDate)
+            .concat(".json");
+        try {
+            this.request({
+                uri: url
+            }, function (err, response) {
+                if (err) {
+                    cb(err);
+                }
+                else {
+                    cb(null, JSON.parse(response));
+                }
+            });
+        }
+        catch (e) {
+            cb(e);
+        }
+    };
+    Fitbit.prototype.getDailySteps = function (date, cb) {
+        this.getDailyActivity(date, function (err, result) {
+            if (err) {
+                return cb(err);
+            }
+            else {
+                return cb(null, result.summary.steps);
+            }
+        });
+    };
+    Fitbit.prototype.getDailyCalories = function (date, cb) {
+        this.getDailyActivity(date, function (err, result) {
+            if (err) {
+                return cb(err);
+            }
+            else {
+                return cb(null, result.summary.activityCalories);
+            }
+        });
+    };
+    Fitbit.prototype.getDailyFloors = function (date, cb) {
+        this.getDailyActivity(date, function (err, result) {
+            if (err) {
+                return cb(err);
+            }
+            else {
+                return cb(null, result.summary.floors);
+            }
+        });
+    };
+    Fitbit.prototype.getDailyElevation = function (date, cb) {
+        this.getDailyActivity(date, function (err, result) {
+            if (err) {
+                return cb(err);
+            }
+            else {
+                return cb(null, result.summary.elevation);
             }
         });
     };

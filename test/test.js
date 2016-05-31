@@ -10,8 +10,8 @@ app.listen(3000);
 
 var options = {
     creds: {
-        clientID: "YOUR_CLIENT_ID",
-        clientSecret: "YOUR_CLIENT_SECRET"
+        clientID: "227LVQ",
+        clientSecret: "e0475cc6acaa51facaef670fa30c3cd6"
     },
     uris: {
         "authorizationUri": "https://www.fitbit.com",
@@ -52,7 +52,7 @@ app.get('/oauth_callback', function (req, res) {
 
         req.session.oauth = token;
 
-        res.redirect('/activity/steps');
+        res.redirect('/activities/steps');
     });
 
 });
@@ -63,10 +63,46 @@ app.get('/activity/steps', function (req, res) {
 
     var date = "2016-05-27";
 
+    fitbit.setToken(req.session.oauth);
+
+    fitbit.getDailySteps(date, function (err, resuklt) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.send({value: resuklt});
+        }
+    });
+});
+
+app.get('/activities/steps', function (req, res) {
+    var fitbit = new Fitbit(options);
+
+    var startdate = "2016-05-27";
+    var enddate = "2016-05-30";
+
+    fitbit.setToken(req.session.oauth);
+
+    fitbit.getTimeSeriesStepsActivity(startdate, enddate, function (err, resuklt) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.send({value: resuklt});
+        }
+    });
+});
+
+
+// Display activity for a user
+app.get('/activity/', function (req, res) {
+    var fitbit = new Fitbit(options);
+
+    var date = "2016-05-27";
+
     var fibitUrl = "https://api.fitbit.com/1/user/" + req.session.oauth.user_id + "/activities/date/" + date + ".json";
 
 
     fitbit.setToken(req.session.oauth);
+
 
     fitbit.request({
         uri: fibitUrl,
