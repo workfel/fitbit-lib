@@ -1,5 +1,10 @@
 # fitbit-lib Release Notes
 
+## v0.1.2 - May 31, 2016
+
+- Solve bug on callback refresh token
+
+
 ## v0.1.0 - May 31, 2016
 
 - Add wrappers for daily measures

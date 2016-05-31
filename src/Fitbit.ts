@@ -90,9 +90,19 @@ export class Fitbit implements IFitbit {
         }, (err, res, body) => {
             if (err) return cb(new Error('token refresh: ' + err.message));
             try {
+
+
                 var token = JSON.parse(body);
-                token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
-                this.token = token;
+
+                if (token.success) {
+                    token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
+                    this.token = token;
+                    cb(null, this.token);
+                } else {
+                    cb(token.errors);
+                }
+
+
             } catch (err) {
                 cb(err);
             }
