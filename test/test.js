@@ -10,8 +10,8 @@ app.listen(3000);
 
 var options = {
     creds: {
-        clientID: "227LVQ",
-        clientSecret: "e0475cc6acaa51facaef670fa30c3cd6"
+        clientID: "YOUR_CLIENT_ID",
+        clientSecret: "YOUR_CLIENT_SECRET"
     },
     uris: {
         "authorizationUri": "https://www.fitbit.com",
