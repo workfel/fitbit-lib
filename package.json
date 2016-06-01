@@ -7,23 +7,31 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "fitbit"
+    "fitbit",
+    "typescript",
+    "oauth2"
   ],
-  "author": "Johan Pujol",
+  "author": {
+    "name": "Johan Pujol",
+    "email": "workfel@gmail.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/workfel/fitbit-lib.git"
   },
   "license": "ISC",
   "devDependencies": {
+    "chai": "^3.5.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "gulp": "^3.9.0",
     "gulp-insert": "^0.5.0",
+    "gulp-mocha": "^2.2.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.10.0",
     "merge2": "^1.0.0",
+    "sinon": "^1.17.4",
     "typescript": "^1.8.0",
     "typings": "1.0.4"
   },
