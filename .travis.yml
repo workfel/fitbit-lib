@@ -9,4 +9,4 @@ before_script:
     - npm install -g mocha
 
 script:
-    - grunt
+    - gulp
