@@ -10,6 +10,7 @@ before_script:
     - npm install -g gulp-cli
     - npm install --quiet
     - npm install -g mocha
+    - npm install -g istanbul
     - npm install coveralls
 
 script:
