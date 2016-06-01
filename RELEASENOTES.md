@@ -1,5 +1,10 @@
 # fitbit-lib Release Notes
 
+## v0.1.4 - June 01, 2016
+
+- Solve bug on Header authorization for refresh token
+
+
 ## v0.1.3 - June 01, 2016
 
 - Add unit testing

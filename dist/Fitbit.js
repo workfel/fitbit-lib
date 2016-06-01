@@ -56,7 +56,7 @@ var Fitbit = (function () {
         request({
             uri: self.config.uris.tokenUri + self.config.uris.tokenPath,
             method: 'POST',
-            headers: { Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64') },
+            headers: { Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64') + "=" },
             timeout: self.config.timeout,
             form: {
                 grant_type: 'refresh_token',

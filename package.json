@@ -1,6 +1,6 @@
 {
   "name": "fitbit-lib",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Fitbit API for NodeJS",
   "main": "dist/Fitbit.js",
   "scripts": {
