@@ -2,7 +2,6 @@
 [![NPM][npm-image]][npm-url]
 
 [![Build Status][travis-image]][travis-url]
-[![Coverage Status][coveralls-image]][coveralls-url]
 
 
 Fitbit API library for node.js
@@ -232,5 +231,3 @@ See release notes [here](./RELEASENOTES.md).
 [npm-url]: https://nodei.co/npm/fitbit-lib
 [travis-image]: https://api.travis-ci.org/workfel/fitbit-lib.svg?branch=master
 [travis-url]:https://api.travis-ci.org/workfel/fitbit-lib
-[coveralls-image]: https://coveralls.io/repos/workfel/fitbit-lib/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/r/workfel/fitbit-lib?branch=master
