@@ -12,8 +12,8 @@ var rootDir = "file://" + __dirname;
 process.on('uncaughtException', console.error.bind(console));
 
 gulp.task('default', ['test'], function () {
-    gulp.start('compile-ts');
-    return gulp.watch('src/**/*.ts', ['compile-ts']);
+    // gulp.start('compile-ts');
+    // return gulp.watch('src/**/*.ts', ['compile-ts']);
 });
 
 
