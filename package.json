@@ -5,6 +5,7 @@
   "main": "dist/Fitbit.js",
   "typings": "dist/Fitbit.d.ts",
   "scripts": {
+    "start": "typings install",
     "test": "gulp"
   },
   "files": ["dist/"],
