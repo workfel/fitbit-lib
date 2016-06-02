@@ -1,6 +1,6 @@
 {
   "name": "fitbit-lib",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Fitbit API for NodeJS",
   "main": "dist/Fitbit.js",
   "scripts": {
@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "async": "^1.4.2",
-    "moment": "^2.10.6",
+    "moment": "^2.13.0",
     "request": "^2.61.0",
-    "simple-oauth2": "^0.2.1"
+    "simple-oauth2": "^0.7.0"
   }
 }

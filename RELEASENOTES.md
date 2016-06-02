@@ -1,5 +1,11 @@
 # fitbit-lib Release Notes
 
+
+## v0.1.5 - June 02, 2016
+
+- Add David Dm : Dependency status
+
+
 ## v0.1.4 - June 01, 2016
 
 - Solve bug on Header authorization for refresh token
