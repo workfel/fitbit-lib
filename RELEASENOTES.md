@@ -1,6 +1,12 @@
 # fitbit-lib Release Notes
 
 
+
+## v0.1.6 - June 02, 2016
+
+- Add Typings form intellisense TS
+
+
 ## v0.1.5 - June 02, 2016
 
 - Add David Dm : Dependency status

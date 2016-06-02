@@ -1,4 +1,3 @@
-import {emptyCompilationResult} from "gulp-typescript/release/reporter";
 var request = require('request');
 var moment = require('moment');
 var async = require('async');
