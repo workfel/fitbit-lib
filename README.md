@@ -13,7 +13,6 @@ Fitbit API library for node.js
 $ npm install --save fitbit-lib
 ```
 
-
 ## Usage
 
 ```js
@@ -152,6 +151,16 @@ app.get('/activity/', function (req, res) {
 
 ### Activity Measures
 
+**All method below have they equivalent but return PROMISE instead of used callback**
+**All method have extension Async like example below**
+```javascript
+ client.getDailyActivityAsync(date).then(function(result){
+        //res.send(result);
+ }, function(error){
+        //throw
+ });
+```
+
 #### client.getDailyActivity(date, callback)
 The date is a `Date` object, and the callback is of the form `function(err, activity)`.
 The activity is directly format from FITBIT API.
@@ -232,6 +241,7 @@ between the two dates.
         {"dateTime":"2016-05-30","value":8196}
     ]
 ```
+
 
 ## Release Notes
 

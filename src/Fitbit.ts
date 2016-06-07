@@ -1,16 +1,38 @@
+import {ActivitiesStepsModel} from "./models/ActivitiesStepsModel";
 var request = require('request');
 var moment = require('moment');
 var async = require('async');
 
 
 export interface IFitbit {
+
+    //Auth
     authorizeURL():string;
     fetchToken(code:string, cb:any):void;
-    fetchTokenAsync(code:string):Promise<string>;
+    fetchTokenAsync(code:string):Promise<any>;
     refresh(cb:any):void;
     setToken(token:string):void;
     getToken():string;
+
+
+    //Request
     request(options:any, cb:any):void;
+    requestAsync(options:any):Promise<any>;
+
+    //Activity measures
+    getTimeSeriesStepsActivity(startDate:string, endDate:string, cb:any):void;
+    getDailyActivity(date:string, cb:any):void;
+    getDailySteps(date:string, cb:any):void;
+    getDailyCalories(date:string, cb:any):void;
+    getDailyFloors(date:string, cb:any):void;
+    getDailyElevation(date:string, cb:any):void;
+    //Promise
+    getTimeSeriesStepsActivityAync(startDate:string, endDate:string):Promise<ActivitiesStepsModel>;
+    getDailyActivityAsync(date:string):Promise<any>;
+    getDailyStepsAsync(date:string):Promise<any>;
+    getDailyCaloriesAsync(date:string):Promise<any>;
+    getDailyFloorsAsync(date:string):Promise<any>;
+    getDailyElevationAsync(date:string):Promise<any>;
 
 }
 
@@ -49,7 +71,7 @@ export class Fitbit implements IFitbit {
     }
 
 
-    async fetchTokenAsync(code:string):Promise<string> {
+    fetchTokenAsync(code:string):Promise<any> {
         return new Promise((resolve, reject) => {
             this.fetchToken(code, function (err:any, token:string) {
                 if (err) {
@@ -132,36 +154,80 @@ export class Fitbit implements IFitbit {
         });
     }
 
-    private getTimeSeriesActivity(startDate:string, endDate:string, ressourcesPath:string, cb:any) {
 
-        if (!this.token)
-            return cb(new Error('must setToken() or getToken() before calling request()'));
-
-
-        let url:string = "https://api.fitbit.com/1/user/"
-            .concat(this.token.user_id)
-            .concat("/activities/")
-            .concat(ressourcesPath)
-            .concat("/date/")
-            .concat(moment(startDate).format('YYYY-MM-DD'))
-            .concat("/")
-            .concat(moment(endDate).format('YYYY-MM-DD'))
-            .concat(".json");
-
-        try {
-            this.request({
-                uri: url
-            }, (err:any, response) => {
+    getTimeSeriesStepsActivityAync(startDate:string, endDate:string):Promise<ActivitiesStepsModel> {
+        return new Promise((resolve, reject) => {
+            this.getTimeSeriesStepsActivity(startDate, endDate, function (err:any, result:ActivitiesStepsModel) {
                 if (err) {
-                    cb(err);
+                    reject(err);
                 } else {
-                    cb(null, JSON.parse(response));
+                    resolve(result);
                 }
             });
-        } catch (e) {
-            cb(e);
-        }
+        });
     }
+
+    getDailyActivityAsync(date:string):Promise<any> {
+        return new Promise((resolve, reject) => {
+            //TODO : Create an ActivityModel
+            this.getDailyActivity(date, function (err:any, result:any) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    getDailyStepsAsync(date:string):Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getDailySteps(date, function (err:any, result:any) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    getDailyCaloriesAsync(date:string):Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getDailyCalories(date, function (err:any, result:any) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    getDailyFloorsAsync(date:string):Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getDailyFloors(date, function (err:any, result:any) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    getDailyElevationAsync(date:string):Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getDailyElevation(date, function (err:any, result:any) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
 
     getDailyActivity(date:string, cb:any):void {
         let activityDate:string = moment(date).format('YYYY-MM-DD');
@@ -232,6 +298,18 @@ export class Fitbit implements IFitbit {
         });
     }
 
+    requestAsync(options:any):Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.request(options, function (err:any, body:any, token:string) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({body: body, token: token});
+                }
+            });
+        });
+    }
+
     request(options:any, cb:any):void {
         var self = this;
 
@@ -266,6 +344,37 @@ export class Fitbit implements IFitbit {
             if (err) return cb(err);
             cb(null, results[1], results[0]);
         });
+    }
+
+    private getTimeSeriesActivity(startDate:string, endDate:string, ressourcesPath:string, cb:any) {
+
+        if (!this.token)
+            return cb(new Error('must setToken() or getToken() before calling request()'));
+
+
+        let url:string = "https://api.fitbit.com/1/user/"
+            .concat(this.token.user_id)
+            .concat("/activities/")
+            .concat(ressourcesPath)
+            .concat("/date/")
+            .concat(moment(startDate).format('YYYY-MM-DD'))
+            .concat("/")
+            .concat(moment(endDate).format('YYYY-MM-DD'))
+            .concat(".json");
+
+        try {
+            this.request({
+                uri: url
+            }, (err:any, response) => {
+                if (err) {
+                    cb(err);
+                } else {
+                    cb(null, JSON.parse(response));
+                }
+            });
+        } catch (e) {
+            cb(e);
+        }
     }
 
 }

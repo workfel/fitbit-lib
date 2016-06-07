@@ -46,12 +46,12 @@ app.get('/oauth_callback', function (req, res) {
 
 
     //With Promise
-    client.fetchTokenAsync(code).then(function(token){
+    client.fetchTokenAsync(code).then(function (token) {
         req.session.oauth = token;
 
         res.redirect('/activities/steps');
-    }, function(err){
-                return res.send(err);
+    }, function (err) {
+        return res.send(err);
     });
 
     //OR with callback
@@ -76,12 +76,18 @@ app.get('/activity/steps', function (req, res) {
 
     fitbit.setToken(req.session.oauth);
 
-    fitbit.getDailySteps(date, function (err, resuklt) {
-        if (err) {
-            res.status(400).send(err);
-        } else {
-            res.send({value: resuklt});
-        }
+    // fitbit.getDailySteps(date, function (err, resuklt) {
+    //     if (err) {
+    //         res.status(400).send(err);
+    //     } else {
+    //         res.send({value: resuklt});
+    //     }
+    // });
+
+    fitbit.getDailyStepsAsync(date).then(function (value) {
+        res.send({value: value});
+    }, function (err) {
+        res.status(400).send(err);
     });
 });
 

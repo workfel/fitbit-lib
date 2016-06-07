@@ -2,6 +2,11 @@
 
 
 
+## v0.1.7 - June 02, 2016
+
+- Add all method with this Async equivalent (return Promise)
+
+
 ## v0.1.6 - June 02, 2016
 
 - Add Typings form intellisense TS
