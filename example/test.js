@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var Fitbit = require('../dist/Fitbit.d').Fitbit;
+var Fitbit = require('../dist/Fitbit').Fitbit;
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
@@ -44,16 +44,27 @@ app.get('/oauth_callback', function (req, res) {
 
     var client = new Fitbit(options);
 
-    client.fetchToken(code, function (err, token) {
 
-        if (err) {
-            return res.send(err);
-        }
-
+    //With Promise
+    client.fetchTokenAsync(code).then(function(token){
         req.session.oauth = token;
 
         res.redirect('/activities/steps');
+    }, function(err){
+                return res.send(err);
     });
+
+    //OR with callback
+    // client.fetchToken(code, function (err, token) {
+    //
+    //     if (err) {
+    //         return res.send(err);
+    //     }
+    //
+    //     req.session.oauth = token;
+    //
+    //     res.redirect('/activities/steps');
+    // });
 
 });
 

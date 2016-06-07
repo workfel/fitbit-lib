@@ -1,6 +1,7 @@
 export interface IFitbit {
     authorizeURL(): string;
     fetchToken(code: string, cb: any): void;
+    fetchTokenAsync(code: string): Promise<string>;
     refresh(cb: any): void;
     setToken(token: string): void;
     getToken(): string;
@@ -19,6 +20,7 @@ export declare class Fitbit implements IFitbit {
     setToken(token: string): void;
     getToken(): string;
     authorizeURL(): string;
+    fetchTokenAsync(code: string): Promise<string>;
     fetchToken(code: string, cb: any): void;
     refresh(cb: any): void;
     getTimeSeriesStepsActivity(startDate: string, endDate: string, cb: any): void;

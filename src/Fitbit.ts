@@ -6,6 +6,7 @@ var async = require('async');
 export interface IFitbit {
     authorizeURL():string;
     fetchToken(code:string, cb:any):void;
+    fetchTokenAsync(code:string):Promise<string>;
     refresh(cb:any):void;
     setToken(token:string):void;
     getToken():string;
@@ -45,6 +46,19 @@ export class Fitbit implements IFitbit {
             site: this.config.uris.authorizationUri,
             authorizationPath: this.config.uris.authorizationPath,
         }).authCode.authorizeURL(this.config.authorization_uri);
+    }
+
+
+    async fetchTokenAsync(code:string):Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.fetchToken(code, function (err:any, token:string) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(token);
+                }
+            });
+        });
     }
 
     fetchToken(code:string, cb:any):void {

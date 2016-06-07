@@ -1,28 +1,49 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 var request = require('request');
 var moment = require('moment');
 var async = require('async');
-var Fitbit = (function () {
-    function Fitbit(config) {
+class Fitbit {
+    constructor(config) {
         this.config = config;
         this.config = config;
     }
-    Fitbit.prototype.setToken = function (token) {
+    setToken(token) {
         this.token = token;
-    };
-    Fitbit.prototype.getToken = function () {
+    }
+    getToken() {
         return this.token;
-    };
-    Fitbit.prototype.authorizeURL = function () {
+    }
+    authorizeURL() {
         return require('simple-oauth2')({
             clientID: this.config.creds.clientID,
             clientSecret: this.config.creds.clientSecret,
             site: this.config.uris.authorizationUri,
             authorizationPath: this.config.uris.authorizationPath,
         }).authCode.authorizeURL(this.config.authorization_uri);
-    };
-    Fitbit.prototype.fetchToken = function (code, cb) {
-        var _this = this;
+    }
+    fetchTokenAsync(code) {
+        return __awaiter(this, void 0, Promise, function* () {
+            return new Promise((resolve, reject) => {
+                this.fetchToken(code, function (err, token) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(token);
+                    }
+                });
+            });
+        });
+    }
+    fetchToken(code, cb) {
         var self = this;
         request({
             uri: self.config.uris.tokenUri + self.config.uris.tokenPath,
@@ -36,22 +57,21 @@ var Fitbit = (function () {
                 client_id: self.config.creds.clientID,
                 client_secret: self.config.creds.clientSecret,
             }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
             if (err)
                 return cb(err);
             try {
                 var token = JSON.parse(body);
                 token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
-                _this.token = token;
+                this.token = token;
                 return cb(null, token);
             }
             catch (err) {
                 cb(err);
             }
         });
-    };
-    Fitbit.prototype.refresh = function (cb) {
-        var _this = this;
+    }
+    refresh(cb) {
         var self = this;
         request({
             uri: self.config.uris.tokenUri + self.config.uris.tokenPath,
@@ -62,15 +82,15 @@ var Fitbit = (function () {
                 grant_type: 'refresh_token',
                 refresh_token: self.token.refresh_token
             }
-        }, function (err, res, body) {
+        }, (err, res, body) => {
             if (err)
                 return cb(new Error('token refresh: ' + err.message));
             try {
                 var token = JSON.parse(body);
                 if (token.success) {
                     token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
-                    _this.token = token;
-                    cb(null, _this.token);
+                    this.token = token;
+                    cb(null, this.token);
                 }
                 else {
                     cb(token.errors);
@@ -80,9 +100,9 @@ var Fitbit = (function () {
                 cb(err);
             }
         });
-    };
-    Fitbit.prototype.getTimeSeriesStepsActivity = function (startDate, endDate, cb) {
-        this.getTimeSeriesActivity(startDate, endDate, "steps", function (err, result) {
+    }
+    getTimeSeriesStepsActivity(startDate, endDate, cb) {
+        this.getTimeSeriesActivity(startDate, endDate, "steps", (err, result) => {
             if (err) {
                 cb(err);
             }
@@ -90,11 +110,11 @@ var Fitbit = (function () {
                 cb(null, result["activities-steps"]);
             }
         });
-    };
-    Fitbit.prototype.getTimeSeriesActivity = function (startDate, endDate, ressourcesPath, cb) {
+    }
+    getTimeSeriesActivity(startDate, endDate, ressourcesPath, cb) {
         if (!this.token)
             return cb(new Error('must setToken() or getToken() before calling request()'));
-        var url = "https://api.fitbit.com/1/user/"
+        let url = "https://api.fitbit.com/1/user/"
             .concat(this.token.user_id)
             .concat("/activities/")
             .concat(ressourcesPath)
@@ -106,7 +126,7 @@ var Fitbit = (function () {
         try {
             this.request({
                 uri: url
-            }, function (err, response) {
+            }, (err, response) => {
                 if (err) {
                     cb(err);
                 }
@@ -118,12 +138,12 @@ var Fitbit = (function () {
         catch (e) {
             cb(e);
         }
-    };
-    Fitbit.prototype.getDailyActivity = function (date, cb) {
-        var activityDate = moment(date).format('YYYY-MM-DD');
+    }
+    getDailyActivity(date, cb) {
+        let activityDate = moment(date).format('YYYY-MM-DD');
         if (!this.token)
             return cb(new Error('must setToken() or getToken() before calling request()'));
-        var url = "https://api.fitbit.com/1/user/"
+        let url = "https://api.fitbit.com/1/user/"
             .concat(this.token.user_id)
             .concat("/activities/date/")
             .concat(activityDate)
@@ -131,7 +151,7 @@ var Fitbit = (function () {
         try {
             this.request({
                 uri: url
-            }, function (err, response) {
+            }, (err, response) => {
                 if (err) {
                     cb(err);
                 }
@@ -143,9 +163,9 @@ var Fitbit = (function () {
         catch (e) {
             cb(e);
         }
-    };
-    Fitbit.prototype.getDailySteps = function (date, cb) {
-        this.getDailyActivity(date, function (err, result) {
+    }
+    getDailySteps(date, cb) {
+        this.getDailyActivity(date, (err, result) => {
             if (err) {
                 return cb(err);
             }
@@ -153,9 +173,9 @@ var Fitbit = (function () {
                 return cb(null, result.summary.steps);
             }
         });
-    };
-    Fitbit.prototype.getDailyCalories = function (date, cb) {
-        this.getDailyActivity(date, function (err, result) {
+    }
+    getDailyCalories(date, cb) {
+        this.getDailyActivity(date, (err, result) => {
             if (err) {
                 return cb(err);
             }
@@ -163,9 +183,9 @@ var Fitbit = (function () {
                 return cb(null, result.summary.activityCalories);
             }
         });
-    };
-    Fitbit.prototype.getDailyFloors = function (date, cb) {
-        this.getDailyActivity(date, function (err, result) {
+    }
+    getDailyFloors(date, cb) {
+        this.getDailyActivity(date, (err, result) => {
             if (err) {
                 return cb(err);
             }
@@ -173,9 +193,9 @@ var Fitbit = (function () {
                 return cb(null, result.summary.floors);
             }
         });
-    };
-    Fitbit.prototype.getDailyElevation = function (date, cb) {
-        this.getDailyActivity(date, function (err, result) {
+    }
+    getDailyElevation(date, cb) {
+        this.getDailyActivity(date, (err, result) => {
             if (err) {
                 return cb(err);
             }
@@ -183,8 +203,8 @@ var Fitbit = (function () {
                 return cb(null, result.summary.elevation);
             }
         });
-    };
-    Fitbit.prototype.request = function (options, cb) {
+    }
+    request(options, cb) {
         var self = this;
         if (!self.token)
             return cb(new Error('must setToken() or getToken() before calling request()'));
@@ -219,9 +239,8 @@ var Fitbit = (function () {
                 return cb(err);
             cb(null, results[1], results[0]);
         });
-    };
-    return Fitbit;
-}());
+    }
+}
 exports.Fitbit = Fitbit;
 
 //# sourceMappingURL=Fitbit.js.map

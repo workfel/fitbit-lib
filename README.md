@@ -63,16 +63,27 @@ app.get('/oauth_callback', function (req, res) {
 
     var client = new Fitbit(options);
 
-    client.fetchToken(code, function (err, token) {
 
-        if (err) {
-            return res.send(err);
-        }
-
+    //With Promise
+    client.fetchTokenAsync(code).then(function(token){
         req.session.oauth = token;
 
-        res.redirect('/activity/steps');
+        res.redirect('/activities/steps');
+    }, function(err){
+                return res.send(err);
     });
+
+    //OR with callback
+    // client.fetchToken(code, function (err, token) {
+    //
+    //     if (err) {
+    //         return res.send(err);
+    //     }
+    //
+    //     req.session.oauth = token;
+    //
+    //     res.redirect('/activities/steps');
+    // });
 
 });
 
@@ -110,6 +121,7 @@ app.get('/activities/steps', function (req, res) {
     });
 });
 
+
 // Display activity for a user
 app.get('/activity/', function (req, res) {
     var fitbit = new Fitbit(options);
@@ -134,7 +146,6 @@ app.get('/activity/', function (req, res) {
         }
     });
 });
-
 ```
 
 ## Client API
