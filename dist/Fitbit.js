@@ -101,7 +101,7 @@ class Fitbit {
             }
         });
     }
-    getTimeSeriesStepsActivityAync(startDate, endDate) {
+    getTimeSeriesStepsActivityAsync(startDate, endDate) {
         return new Promise((resolve, reject) => {
             this.getTimeSeriesStepsActivity(startDate, endDate, function (err, result) {
                 if (err) {
@@ -186,7 +186,7 @@ class Fitbit {
         try {
             this.request({
                 uri: url
-            }, (err, response) => {
+            }, (err, response, refresh_token) => {
                 if (err) {
                     cb(err);
                 }
