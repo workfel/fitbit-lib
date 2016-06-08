@@ -4,6 +4,9 @@ var request = require('request');
 var moment = require('moment');
 var async = require('async');
 
+export interface IFitbitRefreshTokenListener {
+    onTokenRefreshed(token:FitbitToken);
+}
 
 export interface IFitbit {
 
@@ -14,7 +17,6 @@ export interface IFitbit {
     refresh(cb:any):void;
     setToken(token:string):void;
     getToken():string;
-
 
     //Request
     request(options:any, cb:any):void;
@@ -49,9 +51,11 @@ export class Fitbit implements IFitbit {
 
 
     private token:any;
+    private refreshTokenListener:IFitbitRefreshTokenListener;
 
-    constructor(private config:FitbitOptionModel) {
+    constructor(private config:FitbitOptionModel, private refreshTokenListener?:IFitbitRefreshTokenListener) {
         this.config = config;
+        this.refreshTokenListener = refreshTokenListener;
     }
 
     setToken(token:string):void {
@@ -133,7 +137,10 @@ export class Fitbit implements IFitbit {
                 if (token.success) {
                     token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
                     this.token = token;
+
+                    this.refreshTokenListener.onTokenRefreshed(token);
                     cb(null, this.token);
+
                 } else {
                     cb(token.errors);
                 }
