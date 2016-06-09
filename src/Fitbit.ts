@@ -130,14 +130,11 @@ export class Fitbit implements IFitbit {
         }, (err, res, body) => {
             if (err) return cb(new Error('token refresh: ' + err.message));
             try {
-
-
                 var token = JSON.parse(body);
 
-                if (token.success) {
+                if (token.refresh_token) {
                     token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
                     this.token = token;
-
                     this.refreshTokenListener.onTokenRefreshed(token);
                     cb(null, this.token);
 
@@ -306,7 +303,7 @@ export class Fitbit implements IFitbit {
         });
     }
 
-    requestAsync(options:any):Promise<any> {
+    requestAsync(options:any):Promise<{body: any, token: string}> {
         return new Promise((resolve, reject) => {
             this.request(options, function (err:any, body:any, token:string) {
                 if (err) {
@@ -385,4 +382,12 @@ export class Fitbit implements IFitbit {
         }
     }
 
+}
+
+
+class Test{
+    constructor(){
+        let fitbit = new Fitbit({});
+        let [body , token ] = await fitbit.requestAsync();
+    }
 }
