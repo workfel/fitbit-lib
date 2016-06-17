@@ -32,7 +32,7 @@ export interface IFitbit {
     //Promise
     getTimeSeriesStepsActivityAsync(startDate:string, endDate:string):Promise<ActivitiesStepsModel>;
     getDailyActivityAsync(date:string):Promise<any>;
-    getDailyStepsAsync(date:string):Promise<number>;
+    getDailyStepsAsync(date:string):Promise<{body:number, token:string}>;
     getDailyCaloriesAsync(date:string):Promise<any>;
     getDailyFloorsAsync(date:string):Promise<any>;
     getDailyElevationAsync(date:string):Promise<any>;
@@ -172,56 +172,56 @@ export class Fitbit implements IFitbit {
         });
     }
 
-    getDailyActivityAsync(date:string):Promise<any> {
+    getDailyActivityAsync(date:string):Promise<{body:any, token:string}> {
         return new Promise((resolve, reject) => {
             //TODO : Create an ActivityModel
-            this.getDailyActivity(date, function (err:any, result:any) {
+            this.getDailyActivity(date, function (err:any, result:any, refresh_token:string) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result);
+                    resolve({body: result, token: refresh_token});
                 }
             });
         });
     }
 
-    getDailyStepsAsync(date:string):Promise<number> {
+    getDailyStepsAsync(date:string):Promise<{body:number, token:string}> {
         return new Promise((resolve, reject) => {
-            this.getDailySteps(date, function (err:any, result:any) {
+            this.getDailySteps(date, function (err:any, result:any, refresh_token:string) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result);
+                    resolve({body: result, token: refresh_token});
                 }
             });
         });
     }
 
-    getDailyCaloriesAsync(date:string):Promise<any> {
+    getDailyCaloriesAsync(date:string):Promise<{body: any, token: string}> {
         return new Promise((resolve, reject) => {
-            this.getDailyCalories(date, function (err:any, result:any) {
+            this.getDailyCalories(date, function (err:any, result:any, refresh_token:string) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result);
+                    resolve({body: result, token: refresh_token});
                 }
             });
         });
     }
 
-    getDailyFloorsAsync(date:string):Promise<any> {
+    getDailyFloorsAsync(date:string):Promise<{body: any, token: string}> {
         return new Promise((resolve, reject) => {
-            this.getDailyFloors(date, function (err:any, result:any) {
+            this.getDailyFloors(date, function (err:any, result:any, refresh_token:string) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result);
+                    resolve({body: result, token: refresh_token});
                 }
             });
         });
     }
 
-    getDailyElevationAsync(date:string):Promise<any> {
+    getDailyElevationAsync(date:string):Promise<{body:any, token:string}> {
         return new Promise((resolve, reject) => {
             this.getDailyElevation(date, function (err:any, result:any) {
                 if (err) {
@@ -254,7 +254,7 @@ export class Fitbit implements IFitbit {
                 if (err) {
                     cb(err);
                 } else {
-                    cb(null, JSON.parse(response));
+                    cb(null, JSON.parse(response), refresh_token);
                 }
             });
         } catch (e) {
@@ -264,46 +264,46 @@ export class Fitbit implements IFitbit {
 
 
     getDailySteps(date:string, cb:any):void {
-        this.getDailyActivity(date, (err:any, result:any) => {
+        this.getDailyActivity(date, (err:any, result:any, refresh_token:string) => {
             if (err) {
                 return cb(err);
             } else {
-                return cb(null, result.summary.steps);
+                return cb(null, result.summary.steps, refresh_token);
             }
         });
     }
 
     getDailyCalories(date:string, cb:any):void {
-        this.getDailyActivity(date, (err:any, result:any) => {
+        this.getDailyActivity(date, (err:any, result:any, refresh_token:string) => {
             if (err) {
                 return cb(err);
             } else {
-                return cb(null, result.summary.activityCalories);
+                return cb(null, result.summary.activityCalories, refresh_token);
             }
         });
     }
 
     getDailyFloors(date:string, cb:any):void {
-        this.getDailyActivity(date, (err:any, result:any) => {
+        this.getDailyActivity(date, (err:any, result:any, refresh_token:string) => {
             if (err) {
                 return cb(err);
             } else {
-                return cb(null, result.summary.floors);
+                return cb(null, result.summary.floors, refresh_token);
             }
         });
     }
 
     getDailyElevation(date:string, cb:any):void {
-        this.getDailyActivity(date, (err:any, result:any) => {
+        this.getDailyActivity(date, (err:any, result:any, refresh_token:string) => {
             if (err) {
                 return cb(err);
             } else {
-                return cb(null, result.summary.elevation);
+                return cb(null, result.summary.elevation, refresh_token);
             }
         });
     }
 
-    requestAsync(options:any):Promise<{body: any, token: string}> {
+    requestAsync(options:any):Promise<{body:any, token:string}> {
         return new Promise((resolve, reject) => {
             this.request(options, function (err:any, body:any, token:string) {
                 if (err) {
@@ -382,12 +382,4 @@ export class Fitbit implements IFitbit {
         }
     }
 
-}
-
-
-class Test{
-    constructor(){
-        let fitbit = new Fitbit({});
-        let [body , token ] = await fitbit.requestAsync();
-    }
 }

@@ -3,9 +3,11 @@ var request = require('request');
 var moment = require('moment');
 var async = require('async');
 class Fitbit {
-    constructor(config) {
+    constructor(config, refreshTokenListener) {
         this.config = config;
+        this.refreshTokenListener = refreshTokenListener;
         this.config = config;
+        this.refreshTokenListener = refreshTokenListener;
     }
     setToken(token) {
         this.token = token;
@@ -77,9 +79,10 @@ class Fitbit {
                 return cb(new Error('token refresh: ' + err.message));
             try {
                 var token = JSON.parse(body);
-                if (token.success) {
+                if (token.refresh_token) {
                     token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
                     this.token = token;
+                    this.refreshTokenListener.onTokenRefreshed(token);
                     cb(null, this.token);
                 }
                 else {
@@ -116,48 +119,48 @@ class Fitbit {
     getDailyActivityAsync(date) {
         return new Promise((resolve, reject) => {
             //TODO : Create an ActivityModel
-            this.getDailyActivity(date, function (err, result) {
+            this.getDailyActivity(date, function (err, result, refresh_token) {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    resolve(result);
+                    resolve({ body: result, token: refresh_token });
                 }
             });
         });
     }
     getDailyStepsAsync(date) {
         return new Promise((resolve, reject) => {
-            this.getDailySteps(date, function (err, result) {
+            this.getDailySteps(date, function (err, result, refresh_token) {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    resolve(result);
+                    resolve({ body: result, token: refresh_token });
                 }
             });
         });
     }
     getDailyCaloriesAsync(date) {
         return new Promise((resolve, reject) => {
-            this.getDailyCalories(date, function (err, result) {
+            this.getDailyCalories(date, function (err, result, refresh_token) {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    resolve(result);
+                    resolve({ body: result, token: refresh_token });
                 }
             });
         });
     }
     getDailyFloorsAsync(date) {
         return new Promise((resolve, reject) => {
-            this.getDailyFloors(date, function (err, result) {
+            this.getDailyFloors(date, function (err, result, refresh_token) {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    resolve(result);
+                    resolve({ body: result, token: refresh_token });
                 }
             });
         });
@@ -191,7 +194,7 @@ class Fitbit {
                     cb(err);
                 }
                 else {
-                    cb(null, JSON.parse(response));
+                    cb(null, JSON.parse(response), refresh_token);
                 }
             });
         }
@@ -200,42 +203,42 @@ class Fitbit {
         }
     }
     getDailySteps(date, cb) {
-        this.getDailyActivity(date, (err, result) => {
+        this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
                 return cb(err);
             }
             else {
-                return cb(null, result.summary.steps);
+                return cb(null, result.summary.steps, refresh_token);
             }
         });
     }
     getDailyCalories(date, cb) {
-        this.getDailyActivity(date, (err, result) => {
+        this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
                 return cb(err);
             }
             else {
-                return cb(null, result.summary.activityCalories);
+                return cb(null, result.summary.activityCalories, refresh_token);
             }
         });
     }
     getDailyFloors(date, cb) {
-        this.getDailyActivity(date, (err, result) => {
+        this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
                 return cb(err);
             }
             else {
-                return cb(null, result.summary.floors);
+                return cb(null, result.summary.floors, refresh_token);
             }
         });
     }
     getDailyElevation(date, cb) {
-        this.getDailyActivity(date, (err, result) => {
+        this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
                 return cb(err);
             }
             else {
-                return cb(null, result.summary.elevation);
+                return cb(null, result.summary.elevation, refresh_token);
             }
         });
     }
