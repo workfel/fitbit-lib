@@ -12,9 +12,17 @@ class Fitbit {
     setToken(token) {
         this.token = token;
     }
+    /**
+     *
+     * @returns {any}
+     */
     getToken() {
         return this.token;
     }
+    /**
+     *
+     * @returns {string}
+     */
     authorizeURL() {
         return require('simple-oauth2')({
             clientID: this.config.creds.clientID,
@@ -23,6 +31,11 @@ class Fitbit {
             authorizationPath: this.config.uris.authorizationPath,
         }).authCode.authorizeURL(this.config.authorization_uri);
     }
+    /**
+     *
+     * @param code
+     * @returns {Promise<FitbitToken>}
+     */
     fetchTokenAsync(code) {
         return new Promise((resolve, reject) => {
             this.fetchToken(code, function (err, token) {
@@ -35,6 +48,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param code
+     * @param cb : callback return the FitbitToken
+     */
     fetchToken(code, cb) {
         var self = this;
         request({
@@ -94,6 +112,12 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param startDate
+     * @param endDate
+     * @param cb : callback return Array<ActivitiesStepsModel>
+     */
     getTimeSeriesStepsActivity(startDate, endDate, cb) {
         this.getTimeSeriesActivity(startDate, endDate, "steps", (err, result) => {
             if (err) {
@@ -104,6 +128,12 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param startDate
+     * @param endDate
+     * @returns {Promise<Array<ActivitiesStepsModel>>}
+     */
     getTimeSeriesStepsActivityAsync(startDate, endDate) {
         return new Promise((resolve, reject) => {
             this.getTimeSeriesStepsActivity(startDate, endDate, function (err, result) {
@@ -116,6 +146,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @returns {Promise<{body:any, token:string}>}
+     */
     getDailyActivityAsync(date) {
         return new Promise((resolve, reject) => {
             //TODO : Create an ActivityModel
@@ -129,6 +164,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @returns {Promise<{body:number, token:string}>}
+     */
     getDailyStepsAsync(date) {
         return new Promise((resolve, reject) => {
             this.getDailySteps(date, function (err, result, refresh_token) {
@@ -141,6 +181,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @returns {Promise<{body:any, token:string}>}
+     */
     getDailyCaloriesAsync(date) {
         return new Promise((resolve, reject) => {
             this.getDailyCalories(date, function (err, result, refresh_token) {
@@ -153,6 +198,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @returns {Promise<{body:any, token:string}>}
+     */
     getDailyFloorsAsync(date) {
         return new Promise((resolve, reject) => {
             this.getDailyFloors(date, function (err, result, refresh_token) {
@@ -165,6 +215,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @returns {Promise<{body:any, token:string}>}
+     */
     getDailyElevationAsync(date) {
         return new Promise((resolve, reject) => {
             this.getDailyElevation(date, function (err, result) {
@@ -177,6 +232,11 @@ class Fitbit {
             });
         });
     }
+    /**
+     *
+     * @param date
+     * @param cb : callback( err:any, body : any , token: any)
+     */
     getDailyActivity(date, cb) {
         let activityDate = moment(date).format('YYYY-MM-DD');
         if (!this.token)
@@ -202,6 +262,11 @@ class Fitbit {
             cb(e);
         }
     }
+    /**
+     *
+     * @param date
+     * @param cb callback( err:any, steps : number , token: any)
+     */
     getDailySteps(date, cb) {
         this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
@@ -212,6 +277,11 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param date
+     * @param cb callback( err:any, calories : number , token: any)
+     */
     getDailyCalories(date, cb) {
         this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
@@ -222,6 +292,11 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param date
+     * @param cb callback( err:any, floors : number , token: any)
+     */
     getDailyFloors(date, cb) {
         this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
@@ -232,6 +307,11 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param date
+     * @param cb callback( err:any, elevation : number , token: any)
+     */
     getDailyElevation(date, cb) {
         this.getDailyActivity(date, (err, result, refresh_token) => {
             if (err) {
@@ -242,6 +322,11 @@ class Fitbit {
             }
         });
     }
+    /**
+     *
+     * @param options
+     * @returns {Promise<{body: body, token: token}>}
+     */
     requestAsync(options) {
         return new Promise((resolve, reject) => {
             this.request(options, function (err, body, token) {
