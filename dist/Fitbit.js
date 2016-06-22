@@ -58,7 +58,9 @@ class Fitbit {
         request({
             uri: self.config.uris.tokenUri + self.config.uris.tokenPath,
             method: 'POST',
-            headers: { Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64') },
+            headers: {
+                Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64')
+            },
             timeout: self.config.timeout,
             form: {
                 code: code,
@@ -68,8 +70,9 @@ class Fitbit {
                 client_secret: self.config.creds.clientSecret,
             }
         }, (err, res, body) => {
-            if (err)
+            if (err) {
                 return cb(err);
+            }
             try {
                 var token = JSON.parse(body);
                 token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
@@ -86,21 +89,26 @@ class Fitbit {
         request({
             uri: self.config.uris.tokenUri + self.config.uris.tokenPath,
             method: 'POST',
-            headers: { Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64') + "=" },
+            headers: {
+                Authorization: 'Basic ' + new Buffer(self.config.creds.clientID + ':' + self.config.creds.clientSecret).toString('base64') + "="
+            },
             timeout: self.config.timeout,
             form: {
                 grant_type: 'refresh_token',
                 refresh_token: self.token.refresh_token
             }
         }, (err, res, body) => {
-            if (err)
+            if (err) {
                 return cb(new Error('token refresh: ' + err.message));
+            }
             try {
                 var token = JSON.parse(body);
                 if (token.refresh_token) {
                     token.expires_at = moment().add(token.expires_in, 'seconds').format('YYYYMMDDTHH:mm:ss');
                     this.token = token;
-                    this.refreshTokenListener.onTokenRefreshed(token);
+                    if (this.refreshTokenListener) {
+                        this.refreshTokenListener.onTokenRefreshed(token);
+                    }
                     cb(null, this.token);
                 }
                 else {
@@ -239,8 +247,9 @@ class Fitbit {
      */
     getDailyActivity(date, cb) {
         let activityDate = moment(date).format('YYYY-MM-DD');
-        if (!this.token)
+        if (!this.token) {
             return cb(new Error('must setToken() or getToken() before calling request()'));
+        }
         let url = "https://api.fitbit.com/1/user/"
             .concat(this.token.user_id)
             .concat("/activities/date/")
@@ -341,38 +350,47 @@ class Fitbit {
     }
     request(options, cb) {
         var self = this;
-        if (!self.token)
+        if (!self.token) {
             return cb(new Error('must setToken() or getToken() before calling request()'));
-        if (!self.token.access_token)
+        }
+        if (!self.token.access_token) {
             return cb(new Error('token appears corrupt: ' + JSON.stringify(self.token)));
+        }
         async.series([
             function (cb) {
-                if (moment().unix() >= moment(self.token.expires_at, 'YYYYMMDDTHH:mm:ss').unix())
+                if (moment().unix() >= moment(self.token.expires_at, 'YYYYMMDDTHH:mm:ss').unix()) {
                     self.refresh(cb);
-                else
+                }
+                else {
                     cb();
+                }
             },
             function (cb) {
-                if (!options.auth)
+                if (!options.auth) {
                     options.auth = {};
-                if (!options.timeout)
+                }
+                if (!options.timeout) {
                     options.timeout = self.config.timeout;
+                }
                 options.auth.bearer = self.token.access_token;
                 request(options, function (err, res, body) {
-                    if (err)
+                    if (err) {
                         return cb(new Error('request: ' + err.message));
+                    }
                     cb(null, body);
                 });
             },
         ], function (err, results) {
-            if (err)
+            if (err) {
                 return cb(err);
+            }
             cb(null, results[1], results[0]);
         });
     }
     getTimeSeriesActivity(startDate, endDate, ressourcesPath, cb) {
-        if (!this.token)
+        if (!this.token) {
             return cb(new Error('must setToken() or getToken() before calling request()'));
+        }
         let url = "https://api.fitbit.com/1/user/"
             .concat(this.token.user_id)
             .concat("/activities/")
