@@ -422,11 +422,6 @@ export class Fitbit implements IFitbit {
                 options.auth.bearer = self.token.access_token;
                 request(options, function (err, res, body) {
                     if (err) return cb(new Error('request: ' + err.message));
-                    // self.limits = {
-                    //     limit: res.headers['fitbit-rate-limit-limit'],
-                    //     remaining: res.headers['fitbit-rate-limit-remaining'],
-                    //     reset: res.headers['fitbit-rate-limit-reset'],
-                    // };
                     cb(null, body);
                 });
             },
