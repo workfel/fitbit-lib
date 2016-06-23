@@ -98,6 +98,7 @@ app.get('/activity/steps', function (req, res) {
         if (err) {
             res.status(400).send(err);
         } else {
+        //newToken = result.token;
             res.send({value: resuklt});
         }
     });
@@ -111,11 +112,12 @@ app.get('/activities/steps', function (req, res) {
 
     fitbit.setToken(req.session.oauth);
 
-    fitbit.getTimeSeriesStepsActivity(startdate, enddate, function (err, resuklt) {
+    fitbit.getTimeSeriesStepsActivity(startdate, enddate, function (err, result) {
         if (err) {
             res.status(400).send(err);
         } else {
-            res.send({value: resuklt});
+        //newToken = result.token;
+            res.send({value: result.body});
         }
     });
 });
@@ -162,7 +164,7 @@ app.get('/activity/', function (req, res) {
 ```
 
 #### client.getDailyActivity(date, callback)
-The date is a `Date` object, and the callback is of the form `function(err, activity)`.
+The date is a `Date` object, and the callback is of the form `function(err, {body : activity, token: newToken)`.
 The activity is directly format from FITBIT API.
 ```json
 {
@@ -216,22 +218,22 @@ The activity is directly format from FITBIT API.
 
 
 #### client.getDailySteps(date, callback)
-The date is a `Date` object, and the callback is of the form `function(err, data)`. The `data` is the integer number of steps the user has taken today.
+The date is a `Date` object, and the callback is of the form `function(err, {body : data, token: newToken})`. The `data` is the integer number of steps the user has taken today.
 
 #### client.getDailyFloors(date, callback)
-The date is a `Date` object, and the callback is of the form `function(err, data)`. The `data` is the integer number of floors the user has
+The date is a `Date` object, and the callback is of the form `function(err, {body : data, token: newToken})`. The `data` is the integer number of floors the user has
 done today.
 
 #### client.getDailyCalories(date, callback)
-The date is a `Date` object, and the callback is of the form `function(err, data)`. The `data` is the integer number of calories the user has consumed today.
+The date is a `Date` object, and the callback is of the form `function(err, {body : data, token: newToken})`. The `data` is the integer number of calories the user has consumed today.
 
 #### client.getDailyElevation(date, callback)
-The date is a `Date` object, and the callback is of the form `function(err, data)`. The `data` is the float number of elevation the user
+The date is a `Date` object, and the callback is of the form `function(err, {body : data, token: newToken})`. The `data` is the float number of elevation the user
 has done today.
 
 ### TimeSeries Measures
 #### client.getTimeSeriesStepsActivity(startdate, enddate, callback)
-The date is a `Date` object, and the callback is of the form `function(err, activities)`. The `activities` is an collection of steps
+The date is a `Date` object, and the callback is of the form `function(err,{body : activities, token: newToken} )`. The `activities` is an collection of steps
 between the two dates.
 ```json
     [
