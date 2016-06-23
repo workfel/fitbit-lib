@@ -1,5 +1,8 @@
 # fitbit-lib Release Notes
 
+## v0.2.0 - June 23, 2016
+
+- Return the refresh token on all method (the token expire after 1 hour)
 
 
 ## v0.1.7 - June 02, 2016

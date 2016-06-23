@@ -10,8 +10,8 @@ app.listen(3000);
 
 var options = {
     creds: {
-        clientID: "YOUR_CLIENT_ID",
-        clientSecret: "YOUR_CLIENT_SECRET"
+        clientID: "227LVQ",
+        clientSecret: "da50e0c17a7099ddfcc9e692d604e753"
     },
     uris: {
         "authorizationUri": "https://www.fitbit.com",
@@ -84,8 +84,8 @@ app.get('/activity/steps', function (req, res) {
     //     }
     // });
 
-    fitbit.getDailyStepsAsync(date).then(function (value) {
-        res.send({value: value});
+    fitbit.getDailyStepsAsync(date).then(function (response) {
+        res.json(response);
     }, function (err) {
         res.status(400).send(err);
     });
@@ -99,12 +99,19 @@ app.get('/activities/steps', function (req, res) {
 
     fitbit.setToken(req.session.oauth);
 
-    fitbit.getTimeSeriesStepsActivity(startdate, enddate, function (err, resuklt) {
-        if (err) {
-            res.status(400).send(err);
-        } else {
-            res.send({value: resuklt});
-        }
+    // fitbit.getTimeSeriesStepsActivity(startdate, enddate, function (err, resuklt) {
+    //     if (err) {
+    //         res.status(400).send(err);
+    //     } else {
+    //         res.send({value: resuklt});
+    //     }
+    // });
+    //
+
+    fitbit.getTimeSeriesStepsActivityAsync(startdate, enddate).then(function (resuklt) {
+        res.send(resuklt);
+    }, function (err) {
+        res.send(err);
     });
 });
 
